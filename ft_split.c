@@ -6,11 +6,25 @@
 /*   By: sidrissi <sidrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 21:39:08 by sidrissi          #+#    #+#             */
-/*   Updated: 2025/01/14 23:20:34 by sidrissi         ###   ########.fr       */
+/*   Updated: 2025/01/15 11:21:03 by sidrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "so_long.h"
+
+void	*ft_free(char **res, int count)
+{
+	int	i;
+
+	i = 0;
+	while (i <= count)
+	{
+		free(res[i]);
+		i++;
+	}
+	free(res);
+	return (NULL);
+}
 
 int	is_newline(char c, char sp)
 {
@@ -38,31 +52,6 @@ int	count_word(char *s)
 	return (count);
 }
 
-// char	*ft_strdup_split(char *preffix, char *res, char sp)
-// {
-// 	int		i;
-// 	int		len_word;
-// 	char	*word;
-
-// 	i = *preffix;
-// 	len_word = 0;
-// 	while (res[i] && is_newline(res[i], sp))
-// 		i++;
-// 	*preffix = i;
-// 	while (res[i] && !(is_newline(res[i], sp)))
-// 	{
-// 		len_word++;
-// 		i++;
-// 	}
-// 	word = (char *)malloc((len_word + 1) * sizeof(char));
-// 	i = 0;
-// 	while (i < len_word)
-// 		word[i++] = res[(*preffix)++];
-// 	word[len_word] = '\0';
-// 	return (word);
-// }
-
-
 char	*ft_strdup_split(char *str, int *preffix, char sp)
 {
 	char	*word;
@@ -71,10 +60,10 @@ char	*ft_strdup_split(char *str, int *preffix, char sp)
 
 	len_word = 0;
 	i = *preffix;
-	while (str[i] && is_space(str[i], sp))
+	while (str[i] && is_newline(str[i], sp))
 		i++;
 	*preffix = i;
-	while (str[i] && !(is_space(str[i], sp)))
+	while (str[i] && !(is_newline(str[i], sp)))
 	{
 		len_word++;
 		i++;
@@ -101,27 +90,14 @@ char	**ft_split(char *res, char sp)
 	word_arr = (char **)malloc((nb_word + 1) * sizeof(char *));
 	if (!word_arr)
 		return (NULL);
+	i = 0;
 	while (i < nb_word)
 	{
-		word_arr[i] = ft_strdup_split(&preffix, res, sp);
+		word_arr[i] = ft_strdup_split(res, &preffix, sp);
+		if (!word_arr[i])
+			return (ft_free(&res, i));
 		i++;
 	}
 	word_arr[nb_word] = NULL;
 	return (word_arr);
-}
-
-int main()
-{
-    char **res;
-
-    char    str[] = "hello\n word\n 133\n";
-    res = ft_split(str, '\n');
-	
-	int i = 0;
-	while (res[i])
-	{
-		printf(res[i]);
-		free(res[i]);
-		i++;
-	}
 }
