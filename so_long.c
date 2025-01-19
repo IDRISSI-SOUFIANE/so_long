@@ -6,7 +6,7 @@
 /*   By: sidrissi <sidrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 21:38:06 by sidrissi          #+#    #+#             */
-/*   Updated: 2025/01/15 22:48:30 by sidrissi         ###   ########.fr       */
+/*   Updated: 2025/01/16 22:04:14 by sidrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	f()
 {
-	system("leaks a.out");
+	system("leaks so_long");
 }
 
 char	*read_the_map(void)
@@ -40,34 +40,57 @@ char	*read_the_map(void)
 	return (close(fd), res);
 }
 
-int	check_the_element(char **res, int i, int j)
+char    is_pce10(char c)
 {
-	int	c_P;
-	int	c_C;
-	int	c_E;
+    int    i;
+    char *alpha;
+
+    alpha = "PCE10";
+    i = 0;
+    while (alpha[i])
+    {
+        if (alpha[i] == c)
+            return (c);
+        i++;
+    }
+    return ('n');
+}
+
+int	process_char(char c, t_elements *elements)
+{
+	if (is_pce10(c) == 'P')
+		elements->c_p++;
+	else if (is_pce10(c) == 'C')
+		elements->c_c++;
+	else if (is_pce10(c) == 'E')
+		elements->c_e++;
+	else if (is_pce10(c) == '1' || is_pce10(c) == '0')
+		elements->n = 1;
+	else if (is_pce10(c) == 'n')
+		return (0);
+	// printf("%c\n", c);
+	return (1);
+}
+int    check_the_element(char **res, int i, int j)
+{
+	t_elements elements;
 	
-	c_P = 0;
-	c_C = 0;
-	c_E = 0;
+	elements.c_p = 0;
+	elements.c_c = 0;
+	elements.c_e = 0;
+	elements.n = 0;
 	while (res[i])
 	{
 		j = 0;
 		while (res[i][j])
 		{
-			if (res[i][j] == 'P')
-				c_P++;
-			if (res[i][j] == 'C')
-				c_C++;
-			if (res[i][j] == 'E')
-				c_E++;
+			if (!(process_char(res[i][j], &elements)))
+				return (0);
 			j++;
 		}
 		i++;
 	}
-	printf("(c_P: %d) \t (c_C: %d) \t (c_E: %d)\n", c_P, c_C, c_E);
-	if (c_P == 1 && c_E == 1 && c_C != 0) // you can add enemie (c_P >= 1 && c_P < 3)
-		return (1);
-	return (0);
+	return (elements.c_p == 1 && elements.c_e == 1 && elements.c_c != 0);
 }
 
 int	check_the_walls(char **res, int line, int columns)
@@ -85,7 +108,7 @@ int	check_the_walls(char **res, int line, int columns)
 	i = 0;
 	while (res[i])
 	{
-		while (res[i][0] != '1' || res[i][columns - 1] != '1')//
+		while (res[i][0] != '1' || res[i][columns - 1] != '1')
 			return (0);
 		i++;
 	}
@@ -149,16 +172,17 @@ int	check_argument(int ac, char **av)
 		i++;
 	if (!(check_the_map(res_sp)))
 		return (ft_free(res_sp, i), free(res_check), 0);
-	return (free(res_sp), free(res_check), 1);//free(res_sp), 
+	return (ft_free(res_sp, i), free(res_check), 1);
 }
 
 int main(int ac, char **av)
 {
 	// atexit (f);
 	if (!(check_argument(ac, av)))
-		write (1, "The map is not valide\n", 22);
-	else
-		printf("valide");	
+		return (write (1, "The map is not valide\n", 22), 0);
+	// else
+	// 	printf("the map is valdie");
+	call_window();	
 		// check_map();
     return (0);
 }
